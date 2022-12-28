@@ -1,45 +1,44 @@
-import abc
 import datetime
-from fastapi import Request
-from fastapi.responses import JSONResponse
+from abc import ABC, abstractmethod
 
-class SatelliteDataAccess (abc.ABC):
+
+class SatelliteDataAccess (ABC):
     """Provides access to geographical data of the satellite's data-source"""
 
-    @abc.abstractmethod
-    async def queryContainingGeometry(self, locations:Request) -> JSONResponse:
+    @abstractmethod
+    async def queryContainingGeometry(self, locations):
         """
         Query the geometry that together contain the provided locations
 
         Parameters
         ----------
-        locations: fastapi.Request <-- application/JSON <-- geopandas.GeoDataFrame
+        locations: `application/JSON`
             The geo-spacial positions to find the geometry for, that they are contained in
         
         Returns
         -------
-        fastapi.responses.JSONResponse
+        `application/JSON`
             The geometry that together contain the provided locations
         """
         pass
 
-    @abc.abstractmethod
-    async def queryMeasurements(self, datetime_from:datetime.datetime, datetime_to:datetime.datetime, locations:Request) -> JSONResponse:
+    @abstractmethod
+    async def queryMeasurements(self, datetime_from:datetime.datetime, datetime_to:datetime.datetime, locations):
         """
         Query data from the specified datetime-interval [datetime_from, datetime_to]
         
         Parameters
         ----------
-        datetime_from: datetime.datetime
+        datetime_from: `datetime.datetime`
             The beginning of the interval to be queried
-        datetime_to: datetime.datetime
+        datetime_to: `datetime.datetime`
             The end of the interval to be queried
-        locations: fastapi.Request
+        locations: `application/JSON`
             The geo-spacial positions for which the data is queried
         
         Returns
         -------
-        fastapi.responses.JSONResponse <-- geopandas.GeoDataFrame
+        `application/JSON`
             The data that is queried from the data source for the given datetime-interval
         """
         pass

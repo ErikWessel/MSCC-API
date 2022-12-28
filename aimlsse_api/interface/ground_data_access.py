@@ -1,28 +1,24 @@
-import abc
+from abc import ABC, abstractmethod
 import datetime
-from fastapi.responses import JSONResponse
 
-class GroundDataAccess (abc.ABC):
+class GroundDataAccess (ABC):
     """Provides access to geographical data of the ground-measurements data-source"""
 
-    def __init__(self) -> None:
-        super().__init__()
-
-    @abc.abstractmethod
-    async def queryMeasurements(self, datetime_from:datetime.datetime, datetime_to:datetime.datetime) -> JSONResponse:
+    @abstractmethod
+    async def queryMeasurements(self, datetime_from:datetime.datetime, datetime_to:datetime.datetime):
         """
         Query data from the specified datetime-interval [datetime_from, datetime_to]
         
         Parameters
         ----------
-        datetime_from: datetime.datetime
+        datetime_from: `datetime.datetime`
             The beginning of the interval to be queried
-        datetime_to: datetime.datetime
+        datetime_to: `datetime.datetime`
             The end of the interval to be queried
         
         Returns
         -------
-        fastapi.responses.JSONResponse <-- GeoDataFrame
+        `application/JSON`
             The data that is queried from the data source for the given datetime-interval
         """
         pass
