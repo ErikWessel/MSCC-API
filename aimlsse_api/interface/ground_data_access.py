@@ -1,5 +1,6 @@
-from abc import ABC, abstractmethod
 import datetime
+from abc import ABC, abstractmethod
+
 
 class GroundDataAccess (ABC):
     """Provides access to geographical data of the ground-measurements data-source"""
