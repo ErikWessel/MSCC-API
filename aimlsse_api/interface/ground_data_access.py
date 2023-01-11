@@ -1,25 +1,29 @@
 import datetime
 from abc import ABC, abstractmethod
+from datetime import date
+from typing import List
 
 
 class GroundDataAccess (ABC):
-    """Provides access to geographical data of the ground-measurements data-source"""
+    """Provides access to station data of the ground-measurements data-source"""
 
     @abstractmethod
-    async def queryMeasurements(self, datetime_from:datetime.datetime, datetime_to:datetime.datetime):
+    async def queryMetar(self, stations:List[str], date_from:date, date_to:date):
         """
-        Query data from the specified datetime-interval [datetime_from, datetime_to]
+        Query data for the specified stations in the interval [date_from, date_to]
         
         Parameters
         ----------
-        datetime_from: `datetime.datetime`
+        stations: `List[str]`
+            A list containing all stations that the data should be queried for
+        date_from: `datetime.date`
             The beginning of the interval to be queried
-        datetime_to: `datetime.datetime`
+        date_to: `datetime.date`
             The end of the interval to be queried
         
         Returns
         -------
         `application/JSON`
-            The data that is queried from the data source for the given datetime-interval
+            The data that is queried from the data source for the given date-interval
         """
         pass

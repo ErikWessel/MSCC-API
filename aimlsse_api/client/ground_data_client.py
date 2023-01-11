@@ -1,7 +1,7 @@
-import datetime
-from typing import Union
+from datetime import date
+from typing import List
 
-import geopandas as gpd
+import pandas as pd
 import requests
 
 from .web_client import WebClient
@@ -9,29 +9,33 @@ from .web_client import WebClient
 
 class GroundDataClient (WebClient):
     """
-    Provides access to geographical data of the ground-measurements data-source
+    Provides access to station based data of the ground-measurements data-source
 
     Hides communication with the service that implements `aimlsse_api.interface.GroundDataAccess` from the user
     """
 
-    def queryMeasurements(self, datetime_from:datetime.datetime, datetime_to:datetime.datetime) -> gpd.GeoDataFrame:
+    def queryMetar(self, stations:List[str], date_from:date, date_to:date) -> pd.DataFrame:
         """
-        Query data from the specified datetime-interval [datetime_from, datetime_to]
+        Query data for the specified stations in the interval [date_from, date_to]
         
         Parameters
         ----------
-        datetime_from: `datetime.datetime`
+        stations: `List[str]`
+            A list containing all stations that the data should be queried for
+        date_from: `datetime.date`
             The beginning of the interval to be queried
-        datetime_to: `datetime.datetime`
+        date_to: `datetime.date`
             The end of the interval to be queried
         
         Returns
         -------
-        `geopandas.GeoDataFrame`
-            The data that is queried from the data source for the given datetime-interval
+        `pandas.DataFrame`
+            The data that is queried from the data source for the given date-interval
         """
-        query_response = requests.get(f'{self.base_url}/queryMeasurements',
-            params={'datetime_from': datetime_from, 'datetime_to': datetime_to})
+        query_response = requests.post(f'{self.base_url}/queryMetar',
+            params={'date_from': date_from, 'date_to': date_to}, json=stations)
         query_response.raise_for_status()
         data_json = query_response.json()
-        return gpd.GeoDataFrame.from_features(data_json['features'])
+        data = pd.DataFrame(data_json)
+        data['datetime'] = pd.to_datetime(data['datetime'])
+        return data
