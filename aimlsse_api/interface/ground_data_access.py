@@ -10,7 +10,7 @@ class GroundDataAccess (ABC):
     @abstractmethod
     async def queryMetar(self, stations:List[str], date_from:date, date_to:date):
         """
-        Query data for the specified stations in the interval [date_from, date_to]
+        Query METAR data for the specified stations in the interval [date_from, date_to]
         
         Parameters
         ----------
@@ -24,6 +24,24 @@ class GroundDataAccess (ABC):
         Returns
         -------
         `application/JSON`
-            The data that is queried from the data source for the given date-interval
+            The METAR data that is queried from the data source for the given date-interval
+            (station, datetime, metar)
+        """
+        pass
+
+    @abstractmethod
+    async def queryPosition(self, stations:List[str]):
+        """
+        Query data for the specified stations in the interval [date_from, date_to]
+        
+        Parameters
+        ----------
+        stations: `List[str]`
+            A list containing all stations for which the positional data should be returned
+        
+        Returns
+        -------
+        `application/JSON`
+            The positional data for the given stations (latitude in [degrees], longitude in [degrees], elevation in [meters])
         """
         pass

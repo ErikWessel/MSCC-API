@@ -1,8 +1,10 @@
 from datetime import date
 from typing import List
 
+import geopandas as gpd
 import pandas as pd
 import requests
+from shapely import Point
 
 from .web_client import WebClient
 
@@ -39,3 +41,25 @@ class GroundDataClient (WebClient):
         data = pd.DataFrame(data_json)
         data['datetime'] = pd.to_datetime(data['datetime'])
         return data
+    
+    def queryPosition(self, stations:List[str]):
+        """
+        Query data for the specified stations in the interval [date_from, date_to]
+        
+        Parameters
+        ----------
+        stations: `List[str]`
+            A list containing all stations for which the positional data should be returned
+        
+        Returns
+        -------
+        `geopandas.GeoDataFrame`
+            The positional data for the given stations (latitude in [degrees], longitude in [degrees], elevation in [meters])
+        """
+        query_response = requests.post(f'{self.base_url}/queryPosition', json=stations)
+        query_response.raise_for_status()
+        data_json = query_response.json()
+        data = pd.DataFrame(data_json)
+        data['geometry'] = data.apply(lambda x: Point(x['longitude'], x['latitude']), axis=1)
+        geo_data = gpd.GeoDataFrame(data, geometry='geometry', crs='epsg:4326')
+        return geo_data
