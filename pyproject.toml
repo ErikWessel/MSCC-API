@@ -4,9 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aimlsse_api"
-version = "0.2.0"
+version = "0.3.1"
 description = "The API of the project: AI-ML based support for satellite exploration"
 dependencies = [
     "geopandas>=0.12.2",
-    "requests>=2.28.1"
+    "requests>=2.28.1",
+    "fastapi>=0.88.0"
 ]

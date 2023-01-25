@@ -1,6 +1,8 @@
 import datetime
 from abc import ABC, abstractmethod
 
+from fastapi.security import HTTPBasicCredentials
+
 
 class SatelliteDataAccess (ABC):
     """Provides access to geographical data of the satellite's data-source"""
@@ -23,18 +25,21 @@ class SatelliteDataAccess (ABC):
         pass
 
     @abstractmethod
-    async def queryMeasurements(self, datetime_from:datetime.datetime, datetime_to:datetime.datetime, locations):
+    async def queryMeasurements(self, footprint:str, datetime_from:datetime, datetime_to:datetime,
+    credentials: HTTPBasicCredentials):
         """
         Query data from the specified datetime-interval [datetime_from, datetime_to]
         
         Parameters
         ----------
+        footprint: `str`
+            The point or area of interest
         datetime_from: `datetime.datetime`
             The beginning of the interval to be queried
         datetime_to: `datetime.datetime`
             The end of the interval to be queried
-        locations: `application/JSON`
-            The geo-spacial positions for which the data is queried
+        credentials: `HTTPBasicCredentials`
+            A pydantic object with username and password strings
         
         Returns
         -------
