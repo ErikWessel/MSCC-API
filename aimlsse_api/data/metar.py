@@ -1,7 +1,8 @@
 import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional, Type, Union
+from typing import Optional, Type
+
 
 class UnitEnum(str, Enum):
     pass
@@ -42,15 +43,15 @@ class MetarPropertyType(Enum):
     STATION_ID                  = ('station_id')
     TIME                        = ('time')
     OBSERVATION_CYCLE           = ('observation_cycle')
-    WIND_DIRECTION              = ('wind_direction [deg]')
+    WIND_DIRECTION              = ('wind_direction')
     WIND_SPEED                  = ('wind_speed',                       UnitSpeed)
     WIND_GUST_SPEED             = ('wind_gust_speed',                  UnitSpeed)
-    WIND_DIRECTION_FROM         = ('wind_direction_from [deg]')
-    WIND_DIRECTION_TO           = ('wind_direction_to [deg]')
+    WIND_DIRECTION_FROM         = ('wind_direction_from')
+    WIND_DIRECTION_TO           = ('wind_direction_to')
     VISIBILITY                  = ('visibility',                       UnitDistance)
-    VISIBILITY_DIRECTION        = ('visibility_direction [deg]')
+    VISIBILITY_DIRECTION        = ('visibility_direction')
     MAX_VISIBILITY              = ('max_visibility',                   UnitDistance)
-    MAX_VISIBILITY_DIRECTION    = ('max_visibility_direction [deg]')
+    MAX_VISIBILITY_DIRECTION    = ('max_visibility_direction')
     TEMPERATURE                 = ('temperature',                      UnitTemperature)
     DEW_POINT                   = ('dew_point',                        UnitTemperature)
     PRESSURE                    = ('pressure',                         UnitPressure)
@@ -60,7 +61,7 @@ class MetarPropertyType(Enum):
     SKY_CONDITIONS              = ('sky_conditions')
     RUNWAY_WINDSHEAR            = ('runway_windshear')
     WIND_SPEED_PEAK             = ('wind_speed_peak',                  UnitSpeed)
-    WIND_DIRECTION_PEAK         = ('wind_direction_peak [deg]')
+    WIND_DIRECTION_PEAK         = ('wind_direction_peak')
     PEAK_WIND_TIME              = ('peak_wind_time')
     WIND_SHIFT_TIME             = ('wind_shift_time')
     MAX_TEMPERATURE_6H          = ('max_temperature_6h',               UnitTemperature)
