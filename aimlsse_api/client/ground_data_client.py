@@ -4,6 +4,7 @@ from typing import List
 import geopandas as gpd
 import pandas as pd
 import requests
+from aimlsse_api.data.metar import MetarProperty
 from shapely import Point
 
 from .web_client import WebClient
@@ -16,9 +17,10 @@ class GroundDataClient (WebClient):
     Hides communication with the service that implements `aimlsse_api.interface.GroundDataAccess` from the user
     """
 
-    def queryMetar(self, stations:List[str], date_from:date, date_to:date) -> pd.DataFrame:
+    def queryMetar(self, stations:List[str], date_from:date, date_to:date, properties:List[MetarProperty]) -> pd.DataFrame:
         """
-        Query data for the specified stations in the interval [date_from, date_to]
+        Query data for the specified stations in the interval [date_from, date_to],
+        where the properties are extracted from the METARs.
         
         Parameters
         ----------
@@ -28,17 +30,25 @@ class GroundDataClient (WebClient):
             The beginning of the interval to be queried
         date_to: `datetime.date`
             The end of the interval to be queried
+        properties: `List[MetarProperty]`
+            The properties to extract from the METARs
         
         Returns
         -------
         `pandas.DataFrame`
-            The data that is queried from the data source for the given date-interval
+            The METAR data that is queried from the data source for the given date-interval
+            (station, datetime, ..requested properties..)
         """
+        data_json_out = {
+            'stations': stations,
+            'properties': [str(prop) for prop in properties]
+        }
+        print(data_json_out)
         query_response = requests.post(f'{self.base_url}/queryMetar',
-            params={'date_from': date_from, 'date_to': date_to}, json=stations)
+            params={'date_from': date_from, 'date_to': date_to}, json=data_json_out, stream=True)
         query_response.raise_for_status()
-        data_json = query_response.json()
-        data = pd.DataFrame(data_json)
+        data_json_in = query_response.json()
+        data = pd.DataFrame(data_json_in)
         data['datetime'] = pd.to_datetime(data['datetime'])
         return data
     

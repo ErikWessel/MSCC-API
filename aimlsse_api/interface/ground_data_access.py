@@ -1,21 +1,28 @@
 import datetime
 from abc import ABC, abstractmethod
 from datetime import date
-from typing import List
+from typing import List, Union
+
+from aimlsse_api.data.metar import MetarProperty
 
 
-class GroundDataAccess (ABC):
+class GroundDataAccess(ABC):
     """Provides access to station data of the ground-measurements data-source"""
 
     @abstractmethod
-    async def queryMetar(self, stations:List[str], date_from:date, date_to:date):
+    async def queryMetar(self, data:dict, date_from:date, date_to:date):
         """
-        Query METAR data for the specified stations in the interval [date_from, date_to]
+        Query data for the specified stations in the interval [date_from, date_to],
+        where the properties are extracted from the METARs.
         
         Parameters
         ----------
-        stations: `List[str]`
-            A list containing all stations that the data should be queried for
+        data: `JSON / dict`
+        -   stations: `List[str]`
+                A list containing all stations that the data should be queried for
+        -   properties: `List[MetarProperty]`
+                The properties to extract from the METARs
+        
         date_from: `datetime.date`
             The beginning of the interval to be queried
         date_to: `datetime.date`
@@ -25,7 +32,7 @@ class GroundDataAccess (ABC):
         -------
         `application/JSON`
             The METAR data that is queried from the data source for the given date-interval
-            (station, datetime, metar)
+            (station, datetime, ..requested properties..)
         """
         pass
 
