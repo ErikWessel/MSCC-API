@@ -1,16 +1,24 @@
+import logging
 from datetime import date
+from ipaddress import ip_address
 from typing import List
 
 import geopandas as gpd
 import pandas as pd
 import requests
-from aimlsse_api.data.metar import MetarProperty
+from aimlsse_api.data.metar import (MetarPandas, MetarProperty,
+                                    MetarPropertyType)
+from dacite import from_dict
 from shapely import Point
 
 from .web_client import WebClient
 
 
 class GroundDataClient (WebClient):
+
+    def __init__(self, ip_address: ip_address, port: int) -> None:
+        super().__init__(ip_address, port)
+        self.logger = logging.getLogger(f'{__name__}.{self.__class__.__name__}')
     """
     Provides access to station based data of the ground-measurements data-source
 
@@ -50,6 +58,7 @@ class GroundDataClient (WebClient):
         data_json_in = query_response.json()
         data = pd.DataFrame(data_json_in)
         data['datetime'] = pd.to_datetime(data['datetime'])
+        data = MetarPandas.format_dataframe(data, properties)
         return data
     
     def queryPosition(self, stations:List[str]):
