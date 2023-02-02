@@ -14,12 +14,19 @@ class GroundDataAccess(ABC):
         """
         Query data for the specified stations in the interval [date_from, date_to],
         where the properties are extracted from the METARs.
+
+        Groups of parameters in the data, where at least one has to be present are annoted by [x].
+        x refers to the group-identifier.
+        All non-group parameters have to be present.
         
         Parameters
         ----------
         data: `JSON / dict`
-        -   stations: `List[str]`
+        -   stations: `List[str]` [target]
                 A list containing all stations that the data should be queried for
+        -   polygons: `List[str]` [target]
+                A list of polygons in the form of a well-known text (wkt)
+                that specify the area to search for stations
         -   properties: `List[MetarProperty]`
                 The properties to extract from the METARs
         
@@ -37,18 +44,26 @@ class GroundDataAccess(ABC):
         pass
 
     @abstractmethod
-    async def queryPosition(self, stations:List[str]):
+    async def queryMetadata(self, data:dict):
         """
-        Query data for the specified stations in the interval [date_from, date_to]
+        Query metadata for the specified stations in the interval [date_from, date_to]
         
+        Groups of parameters in the data, where at least one has to be present are annoted by [x].
+        x refers to the group-identifier.
+        All non-group parameters have to be present.
+
         Parameters
         ----------
-        stations: `List[str]`
-            A list containing all stations for which the positional data should be returned
+        data: `JSON / dict`
+        -   stations: `List[str]` [target]
+                A list containing all stations that the metadata should be queried for
+        -   polygons: `List[str]` [target]
+                A list of polygons in the form of a well-known text (wkt)
+                that specify the area to search for stations
         
         Returns
         -------
         `application/JSON`
-            The positional data for the given stations (latitude in [degrees], longitude in [degrees], elevation in [meters])
+            The metadata for the given stations (latitude in [degrees], longitude in [degrees], elevation in [meters], ..)
         """
         pass
