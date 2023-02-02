@@ -1,21 +1,35 @@
 import datetime
 from abc import ABC, abstractmethod
 from datetime import date
-from typing import List
+from typing import List, Union
+
+from aimlsse_api.data.metar import MetarProperty
 
 
-class GroundDataAccess (ABC):
+class GroundDataAccess(ABC):
     """Provides access to station data of the ground-measurements data-source"""
 
     @abstractmethod
-    async def queryMetar(self, stations:List[str], date_from:date, date_to:date):
+    async def queryMetar(self, data:dict, date_from:date, date_to:date):
         """
-        Query METAR data for the specified stations in the interval [date_from, date_to]
+        Query data for the specified stations in the interval [date_from, date_to],
+        where the properties are extracted from the METARs.
+
+        Groups of parameters in the data, where at least one has to be present are annoted by [x].
+        x refers to the group-identifier.
+        All non-group parameters have to be present.
         
         Parameters
         ----------
-        stations: `List[str]`
-            A list containing all stations that the data should be queried for
+        data: `JSON / dict`
+        -   stations: `List[str]` [target]
+                A list containing all stations that the data should be queried for
+        -   polygons: `List[str]` [target]
+                A list of polygons in the form of a well-known text (wkt)
+                that specify the area to search for stations
+        -   properties: `List[MetarProperty]`
+                The properties to extract from the METARs
+        
         date_from: `datetime.date`
             The beginning of the interval to be queried
         date_to: `datetime.date`
@@ -25,23 +39,31 @@ class GroundDataAccess (ABC):
         -------
         `application/JSON`
             The METAR data that is queried from the data source for the given date-interval
-            (station, datetime, metar)
+            (station, datetime, ..requested properties..)
         """
         pass
 
     @abstractmethod
-    async def queryPosition(self, stations:List[str]):
+    async def queryMetadata(self, data:dict):
         """
-        Query data for the specified stations in the interval [date_from, date_to]
+        Query metadata for the specified stations in the interval [date_from, date_to]
         
+        Groups of parameters in the data, where at least one has to be present are annoted by [x].
+        x refers to the group-identifier.
+        All non-group parameters have to be present.
+
         Parameters
         ----------
-        stations: `List[str]`
-            A list containing all stations for which the positional data should be returned
+        data: `JSON / dict`
+        -   stations: `List[str]` [target]
+                A list containing all stations that the metadata should be queried for
+        -   polygons: `List[str]` [target]
+                A list of polygons in the form of a well-known text (wkt)
+                that specify the area to search for stations
         
         Returns
         -------
         `application/JSON`
-            The positional data for the given stations (latitude in [degrees], longitude in [degrees], elevation in [meters])
+            The metadata for the given stations (latitude in [degrees], longitude in [degrees], elevation in [meters], ..)
         """
         pass
