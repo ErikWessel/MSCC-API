@@ -71,6 +71,7 @@ class SatelliteDataAccess (ABC):
         `application/JSON`
             The state of the request
         """
+        pass
     
     @abstractmethod
     async def extractFeatures(self, id:str, radius:float, data:dict):
@@ -98,3 +99,23 @@ class SatelliteDataAccess (ABC):
         `application/zip`
             The zip-file of the extracted features
         """
+        pass
+    
+    @abstractmethod
+    async def getProduct(self, id:str):
+        """
+        Requests the full product with the specified id.
+
+        Returns a zip-file of the product.
+        
+        Parameters
+        ----------
+        id: `str`
+            The id of the product to be requested
+        
+        Returns
+        -------
+        `application/zip`
+            The zip-file of the product
+        """
+        pass

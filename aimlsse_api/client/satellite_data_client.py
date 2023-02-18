@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+import re
 from typing import List, Optional, Union
 
 import geopandas as gpd
@@ -124,6 +125,8 @@ class SatelliteDataClient (WebClient):
             The frequency-bands to extract the features for - e.g. ["B2", "B8A"]
         locations: `geopandas.GeoDataFrame`
             The geo-spacial positions - each in the center of their own cropped data
+        out_dir: `str`
+            The directory in which to store the incoming data
         
         Returns
         -------
@@ -146,6 +149,43 @@ class SatelliteDataClient (WebClient):
         ) as response:
             response.raise_for_status()
             with open(filepath, 'wb') as file:
-                for chunk in response.iter_content():
+                for chunk in response.iter_content(512 * 1024):
+                    file.write(chunk)
+        return filepath
+
+    def getProduct(self, id:str, out_dir:str):
+        """
+        Requests the full product with the specified id.
+
+        Returns a zip-file of the product.
+        
+        Parameters
+        ----------
+        id: `str`
+            The id of the product to be requested
+        out_dir: `str`
+            The directory in which to store the incoming data
+        
+        Returns
+        -------
+        `str`
+            The path to the downloaded zip-file of the extracted features
+        """
+        os.makedirs(out_dir, exist_ok=True)
+        with requests.get(f'{self.base_url}/getProduct',
+            params={
+                'id': id,
+            }
+        ) as response:
+            response.raise_for_status()
+            disposition_str = 'content-disposition'
+            if disposition_str in response.headers:
+                disposition = response.headers[disposition_str]
+                filename = re.findall("filename=\"(.+)\"", disposition)[0]
+            else:
+                filename = f'{id}.zip'
+            filepath = os.path.join(out_dir, filename)
+            with open(filepath, 'wb') as file:
+                for chunk in response.iter_content(512 * 1024):
                     file.write(chunk)
         return filepath
