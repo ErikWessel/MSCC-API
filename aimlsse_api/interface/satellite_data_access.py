@@ -27,7 +27,7 @@ class SatelliteDataAccess (ABC):
         pass
 
     @abstractmethod
-    async def queryProductsMetadata(self, footprint:str, datetime_from:datetime, datetime_to:datetime,
+    async def queryProductsMetadata(self, data:dict, datetime_from:datetime, datetime_to:datetime,
         credentials:HTTPBasicCredentials):
         """
         Query products from the specified datetime-interval [datetime_from, datetime_to]
@@ -36,8 +36,9 @@ class SatelliteDataAccess (ABC):
         
         Parameters
         ----------
-        footprint: `str`
-            The point or polygon area of interest
+        data: `JSON / dict`
+        -   footprint: `str`
+                The point or polygon area of interest
         datetime_from: `datetime.datetime`
             The beginning of the interval to be queried
         datetime_to: `datetime.datetime`

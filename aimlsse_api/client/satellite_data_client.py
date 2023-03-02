@@ -42,35 +42,47 @@ class SatelliteDataClient (WebClient):
         geometry_json = query_response.json()
         return gpd.GeoDataFrame.from_features(geometry_json['features'])
 
-    def queryProductsMetadata(self, footprint:Union[Point, Polygon], datetime_from:datetime, datetime_to:datetime,
-        copernicus_login:Credentials) -> pd.DataFrame:
+    def queryProductsMetadata(self, datetime_from:datetime.datetime, datetime_to:datetime.datetime,
+        copernicus_login:Credentials, footprint:Optional[Union[Point, Polygon]] = None,
+        cell_name:Optional[str] = None) -> pd.DataFrame:
         """
         Query products from the specified datetime-interval [datetime_from, datetime_to]
         
         Products contain metadata, allowing the user to filter before making a download request
+
+        It is required to specify either the footprint or the cell_name!
         
         Parameters
         ----------
-        footprint: `Union[Point, Polygon]`
-            The point or polygon area of interest
         datetime_from: `datetime.datetime`
             The beginning of the interval to be queried
         datetime_to: `datetime.datetime`
             The end of the interval to be queried
         copernicus_login: `Credentials`
             The login information for the copernicus hub
-        
+        footprint: `Union[Point, Polygon]`
+            The point or polygon area of interest
+        cell_name: `str`
+            The name of a L1C grid cell
+
         Returns
         -------
         `pandas.DataFrame`
             The products that are queried from the data source for the given datetime-interval
         """
+        json_out = {}
+        if footprint is not None:
+            json_out['footprint'] = footprint.wkt
+        elif cell_name is not None:
+            json_out['cell_name'] = cell_name
+        else:
+            raise ValueError('It is required to specify either the footprint or the cell_name!')
         query_response = requests.post(f'{self.base_url}/queryProductsMetadata',
             params={
-                'footprint': footprint.wkt,
                 'datetime_from': datetime_from,
                 'datetime_to': datetime_to
             },
+            json=json_out,
             auth=HTTPBasicAuth(copernicus_login.username, copernicus_login.password),
             stream=True
         )

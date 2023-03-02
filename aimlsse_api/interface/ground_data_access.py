@@ -10,9 +10,9 @@ class GroundDataAccess(ABC):
     """Provides access to station data of the ground-measurements data-source"""
 
     @abstractmethod
-    async def queryMetar(self, data:dict, date_from:date, date_to:date):
+    async def queryMetar(self, data:dict, datetime_from:datetime, datetime_to:datetime):
         """
-        Query data for the specified stations in the interval [date_from, date_to],
+        Query data for the specified stations in the interval [datetime_from, datetime_to],
         where the properties are extracted from the METARs.
 
         Groups of parameters in the data, where at least one has to be present are annoted by [x].
@@ -30,15 +30,15 @@ class GroundDataAccess(ABC):
         -   properties: `List[MetarProperty]`
                 The properties to extract from the METARs
         
-        date_from: `datetime.date`
+        datetime_from: `datetime.datetime`
             The beginning of the interval to be queried
-        date_to: `datetime.date`
+        datetime_to: `datetime.datetime`
             The end of the interval to be queried
         
         Returns
         -------
         `application/JSON`
-            The METAR data that is queried from the data source for the given date-interval
+            The METAR data that is queried from the data source for the given datetime-interval
             (station, datetime, ..requested properties..)
         """
         pass

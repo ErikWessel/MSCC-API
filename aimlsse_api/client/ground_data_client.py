@@ -1,5 +1,5 @@
 import logging
-from datetime import date
+from datetime import date, datetime
 from ipaddress import ip_address
 from typing import List, Optional
 
@@ -25,19 +25,19 @@ class GroundDataClient (WebClient):
     Hides communication with the service that implements `aimlsse_api.interface.GroundDataAccess` from the user
     """
 
-    def queryMetar(self, date_from:date, date_to:date, properties:List[MetarProperty],
+    def queryMetar(self, datetime_from:datetime, datetime_to:datetime, properties:List[MetarProperty],
         stations:Optional[List[str]] = None, polygons:Optional[List[Polygon]] = None) -> pd.DataFrame:
         """
-        Query data for the specified stations in the interval [date_from, date_to],
+        Query data for the specified stations in the interval [datetime_from, datetime_to],
         where the properties are extracted from the METARs.
 
         Specify a list of stations, polygons or both for the query.
         
         Parameters
         ----------
-        date_from: `datetime.date`
+        datetime_from: `datetime.datetime`
             The beginning of the interval to be queried
-        date_to: `datetime.date`
+        datetime_to: `datetime.datetime`
             The end of the interval to be queried
         properties: `List[MetarProperty]`
             The properties to extract from the METARs
@@ -49,7 +49,7 @@ class GroundDataClient (WebClient):
         Returns
         -------
         `pandas.DataFrame`
-            The METAR data that is queried from the data source for the given date-interval
+            The METAR data that is queried from the data source for the given datetime-interval
             (station, datetime, ..requested properties..)
         """
         if stations is None and polygons is None:
@@ -63,10 +63,9 @@ class GroundDataClient (WebClient):
             data_json_out['polygons'] = [str(x) for x in polygons]
         self.logger.debug(data_json_out)
         query_response = requests.post(f'{self.base_url}/queryMetar',
-            params={'date_from': date_from, 'date_to': date_to}, json=data_json_out, stream=True)
+            params={'datetime_from': datetime_from, 'datetime_to': datetime_to}, json=data_json_out, stream=True)
         query_response.raise_for_status()
-        data_json_in = query_response.json()
-        data = pd.DataFrame(data_json_in)
+        data = pd.read_json(query_response.text, orient='table')
         data['datetime'] = pd.to_datetime(data['datetime'])
         data = MetarPandas.format_dataframe(data, properties)
         return data
